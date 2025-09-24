@@ -1,14 +1,19 @@
 import org.example.domain.Entrega;
 import org.example.domain.TipoFrete;
 import org.example.service.FreteService;
+import org.example.service.Interface.CalculadoraFrete;
 import org.example.service.Interface.IFreteService;
 import org.example.service.Interface.IRegraPromocional;
+import org.example.service.strategy.frete.FreteEconomico;
+import org.example.service.strategy.frete.FreteExpresso;
+import org.example.service.strategy.frete.FretePadrao;
 import org.example.service.strategy.promocao.PromocaoFreteGratisEco;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -18,8 +23,16 @@ public class FretePromocaoIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        Map<TipoFrete, CalculadoraFrete> calculadorasFrete = Map.of(
+                TipoFrete.PAD, new FretePadrao(),
+                TipoFrete.EXP, new FreteExpresso(),
+                TipoFrete.ECO, new FreteEconomico()
+        );
+
         IRegraPromocional promocaoFreteGratis = new PromocaoFreteGratisEco();
-        freteService = new FreteService(List.of(promocaoFreteGratis));
+        List<IRegraPromocional> regrasPromocionais = List.of(promocaoFreteGratis);
+
+        freteService = new FreteService(calculadorasFrete, regrasPromocionais);
     }
 
     @Test
