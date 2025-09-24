@@ -17,15 +17,11 @@ import java.util.Map;
 
 public class FreteService implements IFreteService {
 
-    private static final Map<TipoFrete, CalculadoraFrete> CALCULADORAS = new EnumMap<>(TipoFrete.class);
+    private final Map<TipoFrete, CalculadoraFrete> calculadoras;
     private final List<IRegraPromocional> regrasPromocionais;
 
-    static {
-        CALCULADORAS.put(TipoFrete.EXP, new FreteExpresso());
-        CALCULADORAS.put(TipoFrete.PAD, new FretePadrao());
-        CALCULADORAS.put(TipoFrete.ECO, new FreteEconomico());
-    }
-    public FreteService(List<IRegraPromocional> regrasPromocionais) {
+    public FreteService(Map<TipoFrete, CalculadoraFrete> calculadoras, List<IRegraPromocional> regrasPromocionais) {
+        this.calculadoras = calculadoras;
         this.regrasPromocionais = regrasPromocionais;
     }
     @Override
@@ -43,7 +39,7 @@ public class FreteService implements IFreteService {
         }
         Entrega entregaPromocional = aplicarPromocoes(entrega);
         TipoFrete tipo = entregaPromocional.getTipoFrete();
-        CalculadoraFrete calculadora = CALCULADORAS.get(tipo);
+        CalculadoraFrete calculadora = this.calculadoras.get(tipo);
         if (calculadora == null) {
             throw new RegraException("Tipo de frete não suportado: " + tipo);
         }

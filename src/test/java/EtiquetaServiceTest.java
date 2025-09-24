@@ -41,11 +41,8 @@ void setUp() {
 void deveGerarEtiquetaComFormatoPadrao() {
     Entrega entrega = new Entrega("Rua Padrão, 1", 5.0, TipoFrete.PAD, "João");
     GeradorEtiquetaPadrao formatador = new GeradorEtiquetaPadrao();
-
     freteServiceStub.setCustoParaRetornar(50.0);
-
     String etiqueta = etiquetaService.gerarEtiqueta(entrega, formatador);
-
     assertThat(etiqueta.replace("\u00A0", " "))
             .contains("Custo do Frete: R$ 50,00");
 }
